@@ -1,6 +1,7 @@
 package co.edu.icesi.fi.tics.tssc.services;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,14 +39,16 @@ public class GameServiceImpl implements GameService{
 				{
 					if(topic== null)
 					{
-						gameRepository.saveGame(game);
+						gameRepository.save(game);
 						return game;
 					}else
 					{
-						if(topicRepository.getTopic(topic.getId()) != null)
+						if(topicRepository.existsById(topic.getId()))
 						{
 							game.setTsscTopic(topic);
-							gameRepository.saveGame(game);
+							game.setIdTopic(game.getTsscTopic().getId());
+
+							gameRepository.save(game);
 							return game;	
 						}else throw new NotExistingTopic();
 					}
@@ -59,8 +62,8 @@ public class GameServiceImpl implements GameService{
 
 		if(game != null)
 		{
-			TsscGame existingGame = gameRepository.getGame(game.getId());
-			if(existingGame != null)
+			Optional<TsscGame> existingGame = gameRepository.findById(game.getId());
+			if(gameRepository.existsById(game.getId()))
 			{
 				
 				if(game.getNGroups()>0)
@@ -69,14 +72,15 @@ public class GameServiceImpl implements GameService{
 					{
 						if(game.getTsscTopic() != null)
 						{
-							if(topicRepository.getTopic(game.getTsscTopic().getId()) != null)
+							if(topicRepository.existsById(game.getTsscTopic().getId()))
 							{
-								gameRepository.editGame(game);
+								game.setIdTopic(game.getTsscTopic().getId());
+								gameRepository.save(game);
 								return game;
 							}else throw new NotExistingTopic();
 						}else
 						{
-							gameRepository.editGame(game);
+							gameRepository.save(game);
 							return game;
 						}
 					}else throw new NotEnoughSprintsException();
@@ -100,7 +104,7 @@ public class GameServiceImpl implements GameService{
 					//The topic is obligatory, so we changed it, because it the first method it was optional.
 					if(topic!= null)
 					{
-						if(topicRepository.getTopic(topic.getId()) != null)
+						if(topicRepository.existsById(topic.getId()))
 						{
 						
 							ArrayList<TsscStory> stories =(ArrayList<TsscStory>) topic.getTsscStories();
@@ -117,7 +121,7 @@ public class GameServiceImpl implements GameService{
 								tc.add(timecontrols.get(i));
 							}
 							game.setTsscTimecontrol(tc);
-							gameRepository.saveGame(game);
+							gameRepository.save(game);
 							return game;
 						}else throw new NotExistingTopic();
 					}else throw new NullTopicException();
@@ -127,5 +131,26 @@ public class GameServiceImpl implements GameService{
 		}else throw new NullGameException();
 	}
 
+	public Iterable<TsscGame> findAll()
+	{
+		return gameRepository.findAll();
+	}
 	
+	@Override
+	public Optional<TsscGame> findGameById(long id) {
+
+		return gameRepository.findById(id);
+	}
+
+	@Override
+	public void deleteGame(TsscGame game) {
+		gameRepository.delete(game);
+	}
+	
+	
+	@Override
+	public Iterable<TsscGame> findByIdTopic( long idTopic){
+		return gameRepository.findByIdTopic(idTopic);
+	}
+
 }

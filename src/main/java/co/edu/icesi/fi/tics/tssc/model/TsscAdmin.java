@@ -26,6 +26,8 @@ public class TsscAdmin implements Serializable {
 
 	@Column(name = "AD_USER")
 	private String user;
+	
+	private String username;
 
 	// bi-directional many-to-one association to TsscState
 	@ManyToOne
@@ -66,7 +68,17 @@ public class TsscAdmin implements Serializable {
 	public String getUser() {
 		return this.user;
 	}
+	
+	public String getUsername()
+	{
+		return this.username;
+	}
 
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+	
 	public void setUser(String user) {
 		this.user = user;
 	}

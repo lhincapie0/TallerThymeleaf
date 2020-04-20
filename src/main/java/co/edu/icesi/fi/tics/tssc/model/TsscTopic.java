@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Data;
 
 /**
  * The persistent class for the TSSC_TOPIC database table.
@@ -13,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "TSSC_TOPIC")
+@Data
 @NamedQuery(name = "TsscTopic.findAll", query = "SELECT t FROM TsscTopic t")
 public class TsscTopic implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -22,13 +27,17 @@ public class TsscTopic implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TSSC_TOPIC_ID_GENERATOR")
 	private long id;
 
+	@NotBlank(message="Debe especificar la descripción para el tema.", groups= {TopicValidation.class})
 	private String description;
 
+	@NotBlank(message="Debe asignar un nombre al tema.", groups= {TopicValidation.class})
 	private String name;
 
+	@Min(value =1, message="Los sprints por defecto deben ser mayores a cero", groups= {TopicValidation.class})
 	@Column(name = "DEFAULT_SPRINTS")
 	private long defaultSprints;
 
+	@Min(value =1, message="Los grupos por defecto deben ser mayores a cero", groups= {TopicValidation.class})
 	@Column(name = "DEFAULT_GROUPS")
 	private long defaultGroups;
 

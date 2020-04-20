@@ -2,6 +2,13 @@ package co.edu.icesi.fi.tics.tssc.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+
+import org.springframework.format.annotation.NumberFormat;
+import org.springframework.format.annotation.NumberFormat.Style;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,20 +31,33 @@ public class TsscStory implements Serializable {
 	@Column(name = "ALT_DESC_SHOWN")
 	private String altDescShown;
 
+	private long idGame;
 	@Column(name = "ALT_DESCRIPTON")
 	private String altDescripton;
 
 	@Column(name = "BUSINESS_VALUE")
+	@NotNull(groups=StoryValidation.class)
+	@NumberFormat(style=Style.CURRENCY)
+	@Min(value= 1, message="El valor del negocio de la historia debe ser mayor a 0", groups=StoryValidation.class)
+//	@NotBlank(message = "Debe especificar un valor del negocio para la historia", groups=StoryValidation.class)
 	private BigDecimal businessValue;
 
+	@NotBlank(message = "Por favor de una descripción a la historia", groups = StoryValidation.class)
 	private String description;
 
+	@NumberFormat(style=Style.CURRENCY)
 	@Column(name = "INITIAL_SPRINT")
+	@Min(value= 1, message="El Sprint Inicial de la historia debe ser mayor a 0", groups=StoryValidation.class)
+	//@NotBlank(message = "Debe especificar un Sprint Inicial para la historia", groups=StoryValidation.class)
 	private BigDecimal initialSprint;
 
 	@Column(name = "ST_NUMBER")
+	@PositiveOrZero
 	private BigDecimal number;
 
+	@NumberFormat(style=Style.CURRENCY)
+	@Min(value= 1, message="La prioridad de la historia debe ser mayor a 0", groups=StoryValidation.class)
+	//@NotBlank(message = "Debe especificar una prioridad para la historia", groups=StoryValidation.class)
 	private BigDecimal priority;
 
 	@Column(name = "SHORT_DESCRIPTION")
@@ -54,6 +74,7 @@ public class TsscStory implements Serializable {
 	// bi-directional many-to-one association to TsscGame
 	@ManyToOne
 	@JoinColumn(name = "TSSC_GAME_ID")
+	@NotNull(message="Debe de especificar a que juego pertenece la historia", groups = StoryValidation.class)
 	private TsscGame tsscGame;
 	
 	//bi-directional many-to-one association to TsscTopic
@@ -156,6 +177,7 @@ public class TsscStory implements Serializable {
 
 		return tsscAcceptanceCriteria;
 	}
+	
 
 	public TsscAcceptanceCriteria removeTsscAcceptanceCriteria(TsscAcceptanceCriteria tsscAcceptanceCriteria) {
 		getTsscAcceptanceCriterias().remove(tsscAcceptanceCriteria);
@@ -190,6 +212,15 @@ public class TsscStory implements Serializable {
 		return this.tsscGame;
 	}
 
+	public long getIdGame()
+	{
+		return this.idGame;
+	}
+	
+	public void setIdGame(long idGame)
+	{
+		this.idGame = idGame;
+	}
 	public void setTsscGame(TsscGame tsscGame) {
 		this.tsscGame = tsscGame;
 	}

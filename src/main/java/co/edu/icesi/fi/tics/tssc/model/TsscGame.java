@@ -2,9 +2,14 @@ package co.edu.icesi.fi.tics.tssc.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
@@ -28,35 +33,47 @@ public class TsscGame implements Serializable {
 	private long id;
 
 	@Column(name = "ADMIN_PASSWORD")
+	@NotBlank(message="Debe especificar una contraseña para el administrador", groups = {GameValidation.class})
+	@Size(min =4, message="Las contraseñas deben tener la menos cuatro caracteres" ,groups = {GameValidation.class})
 	private String adminPassword;
 
 	@Column(name = "GUEST_PASSWORD")
+	@NotBlank(message="Debe especificar una contraseña para el observador", groups = {GameValidation.class})
+	@Size(min =4, message="Las contraseñas deben tener la menos cuatro caracteres", groups = {GameValidation.class})
 	private String guestPassword;
 
 	@Column(name = "N_GROUPS")
+	@Min(value =1, message="Los grupos por defecto deben ser mayores a cero", groups= {GameValidation.class})
 	private Integer nGroups = 4;
 
 	@Column(name = "N_SPRINTS")
+	@Min(value =1, message="Los grupos por defecto deben ser mayores a cero", groups= {GameValidation.class})
 	private Integer nSprints = 4;
 
+	@NotBlank(message="Por favor ingrese un nombre para el juego", groups= {GameValidation.class})
 	private String name;
 
 	@Column(name = "PAUSE_SECONDS")
 	private Long pauseSeconds = 0L;
 
 	@Column(name = "SCHEDULED_DATE")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate scheduledDate;
 
 	@Column(name = "SCHEDULED_TIME")
+	@DateTimeFormat(iso = ISO.TIME)
 	private LocalTime scheduledTime;
 
 	@Column(name = "START_TIME")
+	@DateTimeFormat(iso = ISO.TIME)
 	private LocalTime startTime;
 
 	@Column(name = "TYPEGAME_ID")
 	private BigDecimal typegameId;
 
 	@Column(name = "USER_PASSWORD")
+	@NotBlank(message="Debe especificar una contraseña para el usuario", groups = {GameValidation.class})
+	@Size(min =4, message="Las contraseñas deben tener la menos cuatro caracteres", groups = {GameValidation.class})
 	private String userPassword;
 
 	// bi-directional many-to-one association to TsscState
@@ -93,6 +110,8 @@ public class TsscGame implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="TSSC_TOPIC_ID")
 	private TsscTopic tsscTopic;
+	
+	private long idTopic;
 
 	public TsscGame() {
 	}
@@ -103,6 +122,15 @@ public class TsscGame implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+	
+	public void setIdTopic(long id)
+	{
+		this.idTopic = id;
+	}
+	
+	public long getIdTopic() {
+		return this.idTopic;
 	}
 
 	public String getAdminPassword() {

@@ -1,6 +1,7 @@
 package co.edu.icesi.fi.tics.tssc.services;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +39,11 @@ public class StoryServiceImpl implements StoryService{
 					 {
 						if(game != null)
 						{
-							if(gameRepository.getGame(game.getId())!= null)
+							if(gameRepository.existsById(game.getId()))
 							{
 								story.setTsscGame(game);
-								storyRepository.saveStory(story);
+								story.setIdGame(game.getId());
+								storyRepository.save(story);
 								return story;
 							}else throw new NotExistingGameException();
 						
@@ -59,18 +61,21 @@ public class StoryServiceImpl implements StoryService{
 	public TsscStory editStory(TsscStory story) throws NullStoryException, NotExistingStory,BusinessValueException, PriorityException, InitialSprintException, NotExistingGameException {
 		if(story != null)
 		{
-			if(storyRepository.getStory(story.getId())!= null)
+			if(storyRepository.existsById(story.getId()))
 			{
-				TsscStory existingStory = storyRepository.getStory(story.getId());
+				Optional<TsscStory> existingStory = storyRepository.findById(story.getId());
 				if((story.getBusinessValue().compareTo(BigDecimal.ZERO)!=0))
 				{
 					if((story.getInitialSprint().compareTo(BigDecimal.ZERO)!=0))
 					{
 						if((story.getPriority().compareTo(BigDecimal.ZERO)!=0))
 						{
-								if(gameRepository.getGame(story.getTsscGame().getId()) != null)
+								if(gameRepository.existsById(story.getTsscGame().getId()))
 								{
-									storyRepository.editStory(story);
+									story.setTsscGame(story.getTsscGame());
+									story.setIdGame(story.getTsscGame().getId());
+									storyRepository.save(story);
+									
 									return story;
 								}else throw new NotExistingGameException();
 							
@@ -84,5 +89,28 @@ public class StoryServiceImpl implements StoryService{
 		}else throw new NullStoryException();
 		
 	}
+	
+	@Override
+	public Iterable<TsscStory> findAll()
+	{
+		return storyRepository.findAll();
+	}
+	
+	@Override
+	public Optional<TsscStory> findStoryById(long id) {
 
+		return storyRepository.findById(id);
+	}
+
+	@Override
+	public void deleteStory(TsscStory story)
+	{
+		storyRepository.delete(story);
+	}
+	
+	@Override
+	public Iterable<TsscStory> findByGame(long id){
+		return storyRepository.findByIdGame(id);
+	}
+	
 }

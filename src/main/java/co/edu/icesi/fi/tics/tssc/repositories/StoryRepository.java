@@ -1,11 +1,12 @@
 package co.edu.icesi.fi.tics.tssc.repositories;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+
 import co.edu.icesi.fi.tics.tssc.model.TsscStory;
 
-public interface StoryRepository {
+public interface StoryRepository extends CrudRepository<TsscStory, Long> {
 
-	
-	public TsscStory saveStory(TsscStory story);
-	public TsscStory editStory(TsscStory story);
-	public TsscStory getStory(Long id);
+	public Iterable<TsscStory> findByIdGame(@Param("idGame") long idGame);
 }

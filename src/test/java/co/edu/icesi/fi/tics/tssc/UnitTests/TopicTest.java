@@ -84,7 +84,7 @@ public class TopicTest {
 	{
 		topic.setDefaultGroups(4);
 		topic.setDefaultSprints(4);
-		when(mock.saveTopic(topic)).thenReturn(topic);
+		when(mock.save(topic)).thenReturn(topic);
 
 		try {
 			
@@ -94,16 +94,16 @@ public class TopicTest {
 		} catch (NotEnoughGroupsException e) {
 		} catch (NotEnoughSprintsException e) {
 		}
-		verify(mock, times(1)).saveTopic(topic);
+		verify(mock, times(1)).save(topic);
 	}
 	
 	@Test 
 	@DisplayName("Not existing topic for editting")
 	public void editTest1() {
-		when(mock.editTopic(topic)).thenReturn(null);
+		when(mock.save(topic)).thenReturn(null);
 		assertThrows(NotExistingTopic.class, ()-> topicService.editTopic(topic));
 		//It is 0 because it tried to interact but it didn´t return anything
-		verify(mock, times(0)).editTopic(topic);
+		verify(mock, times(0)).save(topic);
 		
 
 	}
@@ -120,11 +120,11 @@ public class TopicTest {
 	@DisplayName("Not enough games edited")
 	public void editTest3()
 	{
-		when(mock.getTopic(topic.getId())).thenReturn(topic);
+		when(mock.existsById(topic.getId())).thenReturn(true);
 		topic.setName("Edited topic");
 		topic.setDefaultGroups(0);
 		assertThrows(NotEnoughGroupsException.class, ()-> topicService.editTopic(topic));
-		verify(mock, times(0)).editTopic(topic);
+		verify(mock, times(0)).save(topic);
 	}
 	
 	@Test
@@ -132,13 +132,13 @@ public class TopicTest {
 	public void editTest4()
 	{
 		{
-			when(mock.getTopic(topic.getId())).thenReturn(topic);
+			when(mock.existsById(topic.getId())).thenReturn(true);
 
 			topic.setName("Edited topic");
 			topic.setDefaultSprints(0);
 			topic.setDefaultGroups(2);
 			assertThrows(NotEnoughSprintsException.class, ()-> topicService.editTopic(topic));
-			verify(mock, times(0)).editTopic(topic);
+			verify(mock, times(0)).save(topic);
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class TopicTest {
 			topic.setDefaultSprints(2);
 		
 			assertEquals(topic, topicService.editTopic(topic));
-			verify(mock, times(1)).editTopic(topic);
+			verify(mock, times(1)).save(topic);
 
 		} catch (NullTopicException |NotEnoughGroupsException | NotEnoughSprintsException | NotExistingTopic e ) {
 			

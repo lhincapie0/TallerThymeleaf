@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.hibernate.criterion.NullExpression;
 import org.junit.jupiter.api.BeforeAll;
@@ -101,7 +102,8 @@ public class GameTest {
 	@DisplayName("An unexisting topic is added")
 	public void saveTest4()
 	{
-		when(mockTopic.getTopic((long) 123.0)).thenReturn(null);
+		when(mockTopic.existsById((long) 123.0)).thenReturn(false);
+
 		assertThrows(NotExistingTopic.class, () -> gameService.saveGame(game, topic));
 		verifyZeroInteractions(mockGame);
 
@@ -112,10 +114,10 @@ public class GameTest {
 	@DisplayName("An existing topic is added - Successful")
 	public void saveTest5()
 	{
-		when(mockTopic.getTopic((long) 123.0)).thenReturn(topic);
+		when(mockTopic.existsById((long) 123.0)).thenReturn(true);
 		try {
 			assertEquals(game, gameService.saveGame(game, topic));
-			verify(mockGame, times(1)).saveGame(game);
+			verify(mockGame, times(1)).save(game);
 		} catch (NotEnoughGroupsException | NotEnoughSprintsException | NullGameException | NotExistingTopic e) {
 		}
 	}
@@ -129,17 +131,17 @@ public class GameTest {
 		} catch (NotEnoughGroupsException | NotEnoughSprintsException | NullGameException | NotExistingTopic e) {
 			e.printStackTrace();
 		}
-		verify(mockGame, times(1)).saveGame(game);
+		verify(mockGame, times(1)).save(game);
 	}
 	
 	@Test
 	@DisplayName("Not existing game for editting")
 	public void editTest1()
 	{
-		when(mockGame.editGame(game)).thenReturn(null);
+		when(mockGame.existsById(game.getId())).thenReturn(false);
 		assertThrows(NotExistingGameException.class, ()-> gameService.editGame(game));
 		//It is 0 because it tried to interact but it didn´t return anything
-		verify(mockGame, times(0)).editGame(game);
+		verify(mockGame, times(0)).save(game);
 	}
 
 	@Test
@@ -155,9 +157,9 @@ public class GameTest {
 	public void editTest3()
 	{
 		game.setNGroups(0);
-		when(mockGame.getGame(game.getId())).thenReturn(game);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
 		assertThrows(NotEnoughGroupsException.class, () -> gameService.editGame(game));
-		verify(mockGame, times(0)).editGame(game);
+		verify(mockGame, times(0)).save(game);
 
 	}
 	
@@ -167,20 +169,20 @@ public class GameTest {
 	public void editTest4()
 	{
 		game.setNSprints(0);
-		when(mockGame.getGame(game.getId())).thenReturn(game);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
 		assertThrows(NotEnoughSprintsException.class, () -> gameService.editGame(game));
-		verify(mockGame, times(0)).editGame(game);
+		verify(mockGame, times(0)).save(game);
 	}
 	
 	@Test
 	@DisplayName("An unexisting topic is added in the edition")
 	public void editTest5()
 	{
-		when(mockGame.getGame(game.getId())).thenReturn(game);
-		when(mockTopic.getTopic((long) 123.0)).thenReturn(null);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
+		when(mockTopic.existsById((long) 123.0)).thenReturn(false);
 		game.setTsscTopic(topic);
 		assertThrows(NotExistingTopic.class, () -> gameService.editGame(game));
-		verify(mockGame, times(0)).editGame(game);
+		verify(mockGame, times(0)).save(game);
 
 	}
 	
@@ -189,8 +191,9 @@ public class GameTest {
 	@DisplayName("An existing topic is added in the edition - Successsful")
 	public void editTest6()
 	{
-		when(mockGame.getGame(game.getId())).thenReturn(game);
-		when(mockTopic.getTopic((long) 123.0)).thenReturn(topic);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
+
+		when(mockTopic.existsById((long) 123.0)).thenReturn(true);
 		game.setTsscTopic(topic);
 		try {
 			assertEquals(game, gameService.editGame(game));
@@ -204,7 +207,7 @@ public class GameTest {
 	@DisplayName("Successful editting")
 	public void editTest7()
 	{
-		when(mockGame.getGame(game.getId())).thenReturn(game);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
 		game.setName("Game 33");
 		try {
 			assertEquals(game, gameService.editGame(game));

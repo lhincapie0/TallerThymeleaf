@@ -133,7 +133,7 @@ public class StoryTest {
 	@DisplayName("No existing game associated")
 	public void saveTest6()
 	{
-		when(mockGame.getGame(game.getId())).thenReturn(null);
+		when(mockGame.existsById(game.getId())).thenReturn(false);
 		assertThrows(NotExistingGameException.class, () -> storyService.saveStory(story,game));
 		verifyZeroInteractions(mockStory);
 	}
@@ -142,10 +142,10 @@ public class StoryTest {
 	@DisplayName("Successful addition")
 	public void saveTest7()
 	{
-		when(mockGame.getGame(game.getId())).thenReturn(game);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
 		try {
 			assertEquals(story, storyService.saveStory(story, game));
-			verify(mockStory, times(1)).saveStory(story);
+			verify(mockStory, times(1)).save(story);
 
 
 		} catch (NullStoryException | BusinessValueException | InitialSprintException | PriorityException
@@ -166,9 +166,9 @@ public class StoryTest {
 	@DisplayName("Not existing story for editting")
 	public void editTest2()
 	{
-		when(mockStory.getStory(story.getId())).thenReturn(null);
+		when(mockStory.existsById(story.getId())).thenReturn(false);
 		assertThrows(NotExistingStory.class, () -> storyService.editStory(story));
-		verify(mockStory, times(0)).editStory(story);
+		verify(mockStory, times(0)).save(story);
 
 	}
 	
@@ -176,10 +176,10 @@ public class StoryTest {
 	@DisplayName("Not enough business value edited")
 	public void editTest3()
 	{
-		when(mockStory.getStory(story.getId())).thenReturn(story);
+		when(mockStory.existsById(story.getId())).thenReturn(true);
 		story.setBusinessValue(new BigDecimal("0"));
 		assertThrows(BusinessValueException.class, () -> storyService.editStory(story));
-		verify(mockStory, times(0)).editStory(story);
+		verify(mockStory, times(0)).save(story);
 
 	}
 	
@@ -188,10 +188,10 @@ public class StoryTest {
 	@DisplayName("Not enough value for initial sprint")
 	public void editTest4()
 	{
-		when(mockStory.getStory(story.getId())).thenReturn(story);
+		when(mockStory.existsById(story.getId())).thenReturn(true);
 		story.setInitialSprint(new BigDecimal("0"));
 		assertThrows(InitialSprintException.class, () -> storyService.editStory(story));
-		verify(mockStory, times(0)).editStory(story);
+		verify(mockStory, times(0)).save(story);
 
 	}
 	
@@ -199,10 +199,10 @@ public class StoryTest {
 	@DisplayName("Not enough priority edited")
 	public void editTest5()
 	{
-		when(mockStory.getStory(story.getId())).thenReturn(story);
+		when(mockStory.existsById(story.getId())).thenReturn(true);
 		story.setPriority(new BigDecimal("0"));
 		assertThrows(PriorityException.class, () -> storyService.editStory(story));
-		verify(mockStory, times(0)).editStory(story);
+		verify(mockStory, times(0)).save(story);
 	}
 	
 	@Test
@@ -212,18 +212,18 @@ public class StoryTest {
 		TsscGame game1 = new TsscGame();
 		game1.setId(20);
 		story.setTsscGame(game1);
-		when(mockStory.getStory(story.getId())).thenReturn(story);
-		when(mockGame.getGame(game.getId())).thenReturn(null);
+		when(mockStory.existsById(story.getId())).thenReturn(true);
+		when(mockGame.existsById(game.getId())).thenReturn(false);
 		assertThrows(NotExistingGameException.class, () -> storyService.editStory(story));
-		verify(mockStory, times(0)).editStory(story);
+		verify(mockStory, times(0)).save(story);
 	}
 	
 	@Test
 	@DisplayName("Successful editting")
 	public void editTest7()
 	{
-		when(mockStory.getStory(story.getId())).thenReturn(story);
-		when(mockGame.getGame(game.getId())).thenReturn(game);
+		when(mockStory.existsById(story.getId())).thenReturn(true);
+		when(mockGame.existsById(game.getId())).thenReturn(true);
 		try {
 			assertEquals(story, storyService.editStory(story));
 		} catch (NullStoryException | NotExistingStory | BusinessValueException | PriorityException

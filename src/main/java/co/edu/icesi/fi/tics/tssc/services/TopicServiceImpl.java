@@ -1,5 +1,7 @@
 package co.edu.icesi.fi.tics.tssc.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class TopicServiceImpl implements TopicService{
 			{
 				if(topic.getDefaultSprints()>0)
 				{
-					topicRepository.saveTopic(topic);
+					topicRepository.save(topic);
 					return topic;
 				}else throw new NotEnoughSprintsException();
 			}else throw new NotEnoughGroupsException();
@@ -37,13 +39,13 @@ public class TopicServiceImpl implements TopicService{
 	public TsscTopic editTopic(TsscTopic topic) throws NullTopicException, NotExistingTopic, NotEnoughSprintsException, NotEnoughGroupsException{
 		if(topic != null)
 		{
-			if(topicRepository.getTopic(topic.getId()) != null)
+			if(topicRepository.existsById(topic.getId()))
 			{
 				if(topic.getDefaultGroups()>0)
 				{
 					if(topic.getDefaultSprints()>0)
 					{
-						topicRepository.editTopic(topic);
+						topicRepository.save(topic);
 						
 					}else throw new NotEnoughSprintsException();
 				}else throw new NotEnoughGroupsException();
@@ -51,6 +53,24 @@ public class TopicServiceImpl implements TopicService{
 				return topic;
 			}else throw new NotExistingTopic();
 		}else throw new NullTopicException();
+	}
+	
+	@Override
+	public Iterable<TsscTopic> findAll(){
+
+		return topicRepository.findAll();
+	}
+
+	@Override
+	public Optional<TsscTopic> findTopicById(long id) {
+
+		return topicRepository.findById(id);
+	}
+	
+	@Override 
+	public void deleteTopic(TsscTopic topic)
+	{
+		topicRepository.delete(topic);
 	}
 
 }
