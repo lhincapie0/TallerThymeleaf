@@ -28,6 +28,8 @@ public class GameServiceImpl implements GameService{
 	@Autowired
 	private TopicRepository topicRepository;
 	
+
+	
 	@Override
 	public TsscGame saveGame(TsscGame game, TsscTopic topic) throws NotEnoughGroupsException, 
 	NotEnoughSprintsException, NullGameException, NotExistingTopic{

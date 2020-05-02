@@ -41,6 +41,9 @@ public class TsscGame implements Serializable {
 	@NotBlank(message="Debe especificar una contraseña para el observador", groups = {GameValidation.class})
 	@Size(min =4, message="Las contraseñas deben tener la menos cuatro caracteres", groups = {GameValidation.class})
 	private String guestPassword;
+	
+	@Column(name="DESCRIPTION")
+	private String description;
 
 	@Column(name = "N_GROUPS")
 	@Min(value =1, message="Los grupos por defecto deben ser mayores a cero", groups= {GameValidation.class})
@@ -115,6 +118,11 @@ public class TsscGame implements Serializable {
 
 	public TsscGame() {
 	}
+	
+	public String getDescripcion()
+	{
+		return this.description;
+	}
 
 	public long getId() {
 		return this.id;
@@ -157,6 +165,10 @@ public class TsscGame implements Serializable {
 		this.nGroups = nGroups;
 	}
 
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
 	public Integer getNSprints() {
 		return this.nSprints;
 	}
