@@ -13,6 +13,6 @@ public interface TopicService {
 	public TsscTopic saveTopic(TsscTopic topic) throws NullTopicException, NotEnoughGroupsException, NotEnoughSprintsException;
 	public TsscTopic editTopic(TsscTopic topic) throws NullTopicException, NotExistingTopic, NotEnoughSprintsException, NotEnoughGroupsException;
 	public Iterable<TsscTopic> findAll();
-	public Optional<TsscTopic> findTopicById(long id); 
+	public TsscTopic findTopicById(long id); 
 	public void deleteTopic(TsscTopic topic);
 }

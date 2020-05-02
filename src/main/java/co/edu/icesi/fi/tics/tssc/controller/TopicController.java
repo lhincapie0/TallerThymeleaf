@@ -74,20 +74,20 @@ public class TopicController {
 
 	@GetMapping("/topics/edit/{id}")
 	public String editTopicShowView(@PathVariable("id") long id, Model model) {
-		Optional<TsscTopic> topic = topicService.findTopicById(id);
+		TsscTopic topic = topicService.findTopicById(id);
 		if (topic == null)
 			throw new IllegalArgumentException("Invalid Topic Id:" + id);
-		model.addAttribute("topic", topic.get());
+		model.addAttribute("topic", topic);
 		model.addAttribute("mode", "edit1");
 		return "topics/edit-topic";
 	}
 	
 	@GetMapping("/topics/edit2/{id}")
 	public String editTopic2ShowView(@PathVariable("id") long id, Model model) {
-		Optional<TsscTopic> topic = topicService.findTopicById(id);
+		TsscTopic topic = topicService.findTopicById(id);
 		if (topic == null)
 			throw new IllegalArgumentException("Invalid Topic Id:" + id);
-		model.addAttribute("topic", topic.get());
+		model.addAttribute("topic", topic);
 		model.addAttribute("mode", null);
 		return "topics/edit-topic";
 	}
@@ -116,7 +116,10 @@ public class TopicController {
 	@GetMapping("/topics/del/{id}")
 	public String deleteTopic(@PathVariable("id") long id)
 	{
-		TsscTopic topic = topicService.findTopicById(id).orElseThrow(()-> new IllegalArgumentException("Invalidad Topic id: " + id));
+		TsscTopic topic = topicService.findTopicById(id);
+		if(topic == null) {
+		 new IllegalArgumentException("Invalidad Topic id: " + id);
+		}
 		topicService.deleteTopic(topic);
 		return "redirect:/topics/";
 	}

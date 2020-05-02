@@ -2,9 +2,12 @@ package co.edu.icesi.fi.tics.tssc.services;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.edu.icesi.fi.tics.tssc.dao.TsscTopicDao;
 import co.edu.icesi.fi.tics.tssc.exceptions.NotEnoughGroupsException;
 import co.edu.icesi.fi.tics.tssc.exceptions.NotEnoughSprintsException;
 import co.edu.icesi.fi.tics.tssc.exceptions.NotExistingTopic;
@@ -14,10 +17,15 @@ import co.edu.icesi.fi.tics.tssc.repositories.TopicRepository;
 
 @Service
 public class TopicServiceImpl implements TopicService{
-	
+/**	
 	@Autowired
 	private TopicRepository topicRepository;
-
+**/
+	
+	@Autowired
+	private TsscTopicDao topicDao;
+	
+	@Transactional
 	@Override
 	public TsscTopic saveTopic(TsscTopic topic) throws NullTopicException, NotEnoughGroupsException, NotEnoughSprintsException{
 		if(topic != null)
@@ -26,7 +34,7 @@ public class TopicServiceImpl implements TopicService{
 			{
 				if(topic.getDefaultSprints()>0)
 				{
-					topicRepository.save(topic);
+					topicDao.save(topic);
 					return topic;
 				}else throw new NotEnoughSprintsException();
 			}else throw new NotEnoughGroupsException();
@@ -36,16 +44,17 @@ public class TopicServiceImpl implements TopicService{
 	}
 
 	@Override
+	@Transactional
 	public TsscTopic editTopic(TsscTopic topic) throws NullTopicException, NotExistingTopic, NotEnoughSprintsException, NotEnoughGroupsException{
 		if(topic != null)
 		{
-			if(topicRepository.existsById(topic.getId()))
+			if(topicDao.findById((topic.getId()))!= null)
 			{
 				if(topic.getDefaultGroups()>0)
 				{
 					if(topic.getDefaultSprints()>0)
 					{
-						topicRepository.save(topic);
+						topicDao.save(topic);
 						
 					}else throw new NotEnoughSprintsException();
 				}else throw new NotEnoughGroupsException();
@@ -58,19 +67,19 @@ public class TopicServiceImpl implements TopicService{
 	@Override
 	public Iterable<TsscTopic> findAll(){
 
-		return topicRepository.findAll();
+		return topicDao.findAll();
 	}
 
 	@Override
-	public Optional<TsscTopic> findTopicById(long id) {
+	public TsscTopic findTopicById(long id) {
 
-		return topicRepository.findById(id);
+		return topicDao.findById(id);
 	}
 	
 	@Override 
 	public void deleteTopic(TsscTopic topic)
 	{
-		topicRepository.delete(topic);
+		topicDao.delete(topic);
 	}
 
 }

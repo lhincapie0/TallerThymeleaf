@@ -3,9 +3,13 @@ package co.edu.icesi.fi.tics.tssc.services;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.edu.icesi.fi.tics.tssc.dao.TsscGameDao;
+import co.edu.icesi.fi.tics.tssc.dao.TsscTopicDao;
 import co.edu.icesi.fi.tics.tssc.exceptions.NotEnoughGroupsException;
 import co.edu.icesi.fi.tics.tssc.exceptions.NotEnoughSprintsException;
 import co.edu.icesi.fi.tics.tssc.exceptions.NotExistingGameException;
@@ -22,15 +26,20 @@ import co.edu.icesi.fi.tics.tssc.repositories.TopicRepository;
 @Service
 public class GameServiceImpl implements GameService{
 
-	@Autowired
+	/**@Autowired
 	private GameRepository gameRepository;
 	
 	@Autowired
-	private TopicRepository topicRepository;
+	private TopicRepository topicRepository;**/
 	
 
+	@Autowired
+	private TsscTopicDao topicDao;
+	@Autowired
+	private TsscGameDao gameDao;
 	
 	@Override
+	@Transactional
 	public TsscGame saveGame(TsscGame game, TsscTopic topic) throws NotEnoughGroupsException, 
 	NotEnoughSprintsException, NullGameException, NotExistingTopic{
 		if(game!=null)
@@ -41,16 +50,16 @@ public class GameServiceImpl implements GameService{
 				{
 					if(topic== null)
 					{
-						gameRepository.save(game);
+						gameDao.save(game);
 						return game;
 					}else
 					{
-						if(topicRepository.existsById(topic.getId()))
+						if(topicDao.findById(topic.getId())!= null)
 						{
 							game.setTsscTopic(topic);
 							game.setIdTopic(game.getTsscTopic().getId());
 
-							gameRepository.save(game);
+							gameDao.save(game);
 							return game;	
 						}else throw new NotExistingTopic();
 					}
@@ -60,12 +69,13 @@ public class GameServiceImpl implements GameService{
 	}
 
 	@Override
+	@Transactional
 	public TsscGame editGame(TsscGame game) throws NotExistingGameException, NullGameException, NotEnoughGroupsException, NotEnoughSprintsException, NotExistingTopic {
 
 		if(game != null)
 		{
-			Optional<TsscGame> existingGame = gameRepository.findById(game.getId());
-			if(gameRepository.existsById(game.getId()))
+			TsscGame existingGame = gameDao.findById(game.getId());
+			if(gameDao.findById(game.getId())!= null)
 			{
 				
 				if(game.getNGroups()>0)
@@ -74,15 +84,15 @@ public class GameServiceImpl implements GameService{
 					{
 						if(game.getTsscTopic() != null)
 						{
-							if(topicRepository.existsById(game.getTsscTopic().getId()))
+							if(topicDao.findById(game.getTsscTopic().getId()) != null)
 							{
 								game.setIdTopic(game.getTsscTopic().getId());
-								gameRepository.save(game);
+								gameDao.update(game);
 								return game;
 							}else throw new NotExistingTopic();
 						}else
 						{
-							gameRepository.save(game);
+							gameDao.save(game);
 							return game;
 						}
 					}else throw new NotEnoughSprintsException();
@@ -95,6 +105,8 @@ public class GameServiceImpl implements GameService{
 		
 	}
 
+	
+	@Transactional
 	public TsscGame saveGame2(TsscGame game, TsscTopic topic) throws NotEnoughGroupsException, 
 	NotEnoughSprintsException, NullGameException, NotExistingTopic, NullTopicException{
 		if(game!=null)
@@ -106,7 +118,7 @@ public class GameServiceImpl implements GameService{
 					//The topic is obligatory, so we changed it, because it the first method it was optional.
 					if(topic!= null)
 					{
-						if(topicRepository.existsById(topic.getId()))
+						if(topicDao.findById(topic.getId())!= null)
 						{
 						
 							ArrayList<TsscStory> stories =(ArrayList<TsscStory>) topic.getTsscStories();
@@ -123,7 +135,7 @@ public class GameServiceImpl implements GameService{
 								tc.add(timecontrols.get(i));
 							}
 							game.setTsscTimecontrol(tc);
-							gameRepository.save(game);
+							gameDao.save(game);
 							return game;
 						}else throw new NotExistingTopic();
 					}else throw new NullTopicException();
@@ -135,24 +147,24 @@ public class GameServiceImpl implements GameService{
 
 	public Iterable<TsscGame> findAll()
 	{
-		return gameRepository.findAll();
+		return gameDao.findAll();
 	}
 	
 	@Override
-	public Optional<TsscGame> findGameById(long id) {
+	public TsscGame findGameById(long id) {
 
-		return gameRepository.findById(id);
+		return gameDao.findById(id);
 	}
 
 	@Override
 	public void deleteGame(TsscGame game) {
-		gameRepository.delete(game);
+		gameDao.delete(game);
 	}
 	
 	
 	@Override
 	public Iterable<TsscGame> findByIdTopic( long idTopic){
-		return gameRepository.findByIdTopic(idTopic);
+		return gameDao.findByTopic(idTopic);
 	}
 
 }

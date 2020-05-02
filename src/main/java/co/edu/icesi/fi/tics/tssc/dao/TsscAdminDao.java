@@ -5,12 +5,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import co.edu.icesi.fi.tics.tssc.model.TsscAdmin;
 import co.edu.icesi.fi.tics.tssc.model.TsscStory;
 
 @Repository
+@Scope("singleton")
 public class TsscAdminDao implements ITsscAdminDao{
 	
 	@PersistenceContext

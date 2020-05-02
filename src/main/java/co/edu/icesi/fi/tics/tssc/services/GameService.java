@@ -20,7 +20,7 @@ public interface GameService {
 	NotEnoughGroupsException, NotEnoughSprintsException, NullGameException, NotExistingTopic;
 	public TsscGame editGame(TsscGame game) throws NotExistingGameException, NullGameException, NotEnoughGroupsException, NotEnoughSprintsException, NotExistingTopic;
 	public Iterable<TsscGame> findAll();
-	public Optional<TsscGame> findGameById(long id);
+	public TsscGame findGameById(long id);
 	public void deleteGame(TsscGame game);
 	public Iterable<TsscGame> findByIdTopic( long idTopic);
 

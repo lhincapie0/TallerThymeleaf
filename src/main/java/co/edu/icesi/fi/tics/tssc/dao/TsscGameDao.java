@@ -9,11 +9,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import co.edu.icesi.fi.tics.tssc.model.TsscGame;
 
 @Repository
+@Scope("singleton")
 public class TsscGameDao implements ITsscGameDao{
 	
 	@PersistenceContext

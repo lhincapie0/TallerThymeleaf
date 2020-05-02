@@ -88,7 +88,7 @@ public class TallerThymeleafApplication {
 		topic2.setDefaultSprints(3);
 		topic2.setName("TS Biol");
 		topic2.setDescription("Tema para est. biol");
-		topicService.saveTopic(topic);
+		topicService.saveTopic(topic2);
 		
 		
 		//Creación de juegos

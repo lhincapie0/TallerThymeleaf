@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import co.edu.icesi.fi.tics.tssc.model.TsscTopic;
 
 @Repository
-//@Scope("Singleton")
+@Scope("singleton")
 public class TsscTopicDao implements ITsscTopicDao{
 
 	@PersistenceContext

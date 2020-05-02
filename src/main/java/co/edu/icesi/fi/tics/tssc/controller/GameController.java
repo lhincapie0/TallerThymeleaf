@@ -84,8 +84,11 @@ public class GameController {
 	
 	@GetMapping("/games/del/{id}")
 	public String deleteGame(@PathVariable("id") long id) {
-		TsscGame game = gameService.findGameById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Game Id: "+ id));
+		TsscGame game =gameService.findGameById(id);
+		if (game == null)
+			throw new IllegalArgumentException("Invalid Game Id: " + id);
 		gameService.deleteGame(game);
+
 		return "redirect:/games/";
 	}
 	
@@ -93,10 +96,10 @@ public class GameController {
 	
 	@GetMapping("/games/edit/{id}")
 	public String editGameShowView(@PathVariable("id") long id, Model model) {
-		Optional<TsscGame> game = gameService.findGameById(id);
+		TsscGame game = gameService.findGameById(id);
 		if (game == null)
 			throw new IllegalArgumentException("Invalid Game Id: " + id);
-		model.addAttribute("game", game.get());
+		model.addAttribute("game", game);
 		model.addAttribute("topics", topicService.findAll());
 		return "games/edit-game";
 	}

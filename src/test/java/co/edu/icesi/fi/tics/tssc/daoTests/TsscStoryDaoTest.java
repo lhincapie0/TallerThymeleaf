@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.icesi.fi.tics.tssc.TallerThymeleafApplication;
+import co.edu.icesi.fi.tics.tssc.dao.TsscGameDao;
 import co.edu.icesi.fi.tics.tssc.dao.TsscStoryDao;
+import co.edu.icesi.fi.tics.tssc.model.TsscGame;
 import co.edu.icesi.fi.tics.tssc.model.TsscStory;
 
 
@@ -32,16 +34,24 @@ public class TsscStoryDaoTest {
 	@Autowired
 	private TsscStoryDao storyDao;
 	
+	@Autowired
+	private TsscGameDao gameDao;
+	
 	private TsscStory story1;
 	private TsscStory story2;
+	private TsscGame game;
 	
 	
 	public void setUp()
 	{
+		game = new TsscGame();
+		game.setName("Juego");
 		story1 = new TsscStory();
 		story1.setDescription("Historia test 1");
 		story2 = new TsscStory();
 		story2.setDescription("Historia test 2");
+		story1.setTsscGame(game);
+
 	}
 	
 	@Test
@@ -51,6 +61,7 @@ public class TsscStoryDaoTest {
 	public void test1()
 	{
 		setUp();
+		gameDao.save(game);
 		assertEquals(0,storyDao.findAll().size());
 		storyDao.save(story1);
 		storyDao.save(story2);
@@ -79,6 +90,14 @@ public class TsscStoryDaoTest {
 		assertEquals(stories.get(0), storyDao.findById(1));
 	}
 	
+	@Test
+	@Order(2)
+	@Transactional(readOnly=false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@DisplayName("Find by game")
+	public void test4()
+	{
+		assertEquals("Historia test 1", storyDao.findByGame(1).get(0).getDescription());
+	}
 
 	
 	@Test

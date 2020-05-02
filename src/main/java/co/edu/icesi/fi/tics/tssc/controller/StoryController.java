@@ -95,7 +95,11 @@ public class StoryController {
 	
 	@GetMapping("/stories/del/{id}")
 	public String deleteStory(@PathVariable("id") long id) {
-		TsscStory story =storyService.findStoryById(id).orElseThrow(() -> new IllegalArgumentException("Invalidad Story Id: "+id));
+		TsscStory story =storyService.findStoryById(id);
+		if(story == null)
+			{
+			 new IllegalArgumentException("Invalidad Story Id: "+id);
+			}
 		storyService.deleteStory(story);
 		return "redirect:/stories/";
 	}
@@ -104,10 +108,12 @@ public class StoryController {
 	
 	@GetMapping("/stories/edit/{id}")
 	public String editStoryShowView(@PathVariable("id") long id, Model model) {
-		Optional<TsscStory> story = storyService.findStoryById(id);
-		if (story == null)
-			throw new IllegalArgumentException("Invalid Story Id: " + id);
-		model.addAttribute("story", story.get());
+		TsscStory story =storyService.findStoryById(id);
+		if(story == null)
+			{
+			 new IllegalArgumentException("Invalidad Story Id: "+id);
+			}
+		model.addAttribute("story", story);
 		model.addAttribute("games", gameService.findAll());
 		return "stories/edit-story";
 	}
