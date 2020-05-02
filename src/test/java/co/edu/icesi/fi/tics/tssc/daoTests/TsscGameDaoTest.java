@@ -158,8 +158,9 @@ public class TsscGameDaoTest {
 	{//Trae en orden DESC 
 		
 		List<Object[]> result = gameDao.findTopicsByDate(LocalDate.of(2020, 10, 20));
+			
+			assertEquals(2,result.size());
 			TsscTopic t = (TsscTopic) result.get(0)[0];
-
 			assertEquals("Tema 1",t.getName());
 
 			assertEquals((long)2,result.get(0)[1]);
@@ -168,20 +169,52 @@ public class TsscGameDaoTest {
 			assertEquals("Tema 2",t2.getName());
 			assertEquals((long)1,result.get(1)[1]);
 	}
+	
+	@Test
+	@Order(2)
+	@Transactional(readOnly=false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+	@DisplayName("Find topics and its games by date in order by scheduledTime")
+	public void test9()
+	{//Trae en orden DESC 
+		
+		List<Object[]> result = gameDao.findTopicsByDate2(LocalDate.of(2020, 10, 20));
+
+			
+		
+			assertEquals(3,result.size());
+			//Primero en hora (8)
+			TsscTopic t1 = (TsscTopic) result.get(0)[0];
+			assertEquals("Tema 2",t1.getName());
+			TsscGame g1 = (TsscGame) result.get(0)[1];
+			assertEquals("Juego 4",g1.getName());
+			
+			//Segundo en hora
+			TsscTopic t2 = (TsscTopic) result.get(1)[0];
+			assertEquals("Tema 1",t2.getName());
+			TsscGame g2 = (TsscGame) result.get(1)[1];
+			assertEquals("Nuevo juego",g2.getName());
+			//Tercero en hora
+			TsscTopic t3 = (TsscTopic) result.get(2)[0];
+			assertEquals("Tema 1",t3.getName());
+			TsscGame g3 = (TsscGame) result.get(2)[1];
+			assertEquals("Juego 2",g3.getName());
+
+	}
+
 
 
 	@Test
 	@Transactional(readOnly=false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-	@DisplayName("Find topics by requisites")
-	public void test9()
+	@DisplayName("Find games by stories or timecontrols")
+	public void test10()
 	{
 
 		//Cumple la fecha, tiene historias pero son menos de 10 historias
 		assertEquals(4, gameDao.findById(3).getTsscStories().size());
-		assertEquals("Juego 3",gameDao.findByRequisites(LocalDate.of(2020, 12,3)).get(0).getName());
+		assertEquals("Juego 3",gameDao.findByNoStoriesNoTimeControls(LocalDate.of(2020, 12,3)).get(0).getName());
 		//Cumple la fecha, tiene 10 historias pero no tiene ningun cronometro especificado 
 		assertEquals(10, gameDao.findById(5).getTsscStories().size());
-		assertEquals("Juego 5",gameDao.findByRequisites(LocalDate.of(2020, 12,3)).get(1).getName());
+		assertEquals("Juego 5",gameDao.findByNoStoriesNoTimeControls(LocalDate.of(2020, 12,3)).get(1).getName());
 	
 	}
 

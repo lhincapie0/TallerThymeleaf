@@ -65,6 +65,10 @@ public class TsscGameDao implements ITsscGameDao{
 		return entityManager.createQuery(jpql).getResultList();
 	}
 
+	/*
+	 * El(los) temas (es) con sus datos y cantidad de juegos programados (para una fecha dada)
+	 * . Recibe como parámetro la fecha dada y muestra todos los temas que cumplen.
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object[]> findTopicsByDate(LocalDate date) {
@@ -80,7 +84,12 @@ public class TsscGameDao implements ITsscGameDao{
 	
 	
 	
-	////BORRAR
+/**
+ * El(los) temas (es) con sus datos y de juegos programados (para una fecha dada), ordenados por hora. 
+ * @param date, fecha para la cual esta programada el juego
+ * @return
+ */
+	@Override
 	public List<Object[]> findTopicsByDate2(LocalDate date) {
 				
 	String j1 = "SELECT a,b FROM TsscTopic a RIGHT JOIN TsscGame b ON a = b.tsscTopic"
@@ -107,7 +116,8 @@ public class TsscGameDao implements ITsscGameDao{
 
 	@Override
 	public List<TsscGame> findByDateAndTimeRange(LocalDate date, LocalTime time1, LocalTime time2) {
-		String jpql = "SELECT a FROM TsscGame a WHERE a.scheduledDate ='"+date+"' AND a.scheduledTime >= '"+time1+"' AND a.scheduledTime <= '"+time2+"'";
+		String jpql = "SELECT a FROM TsscGame a WHERE a.scheduledDate ='"+date+"' AND a.scheduledTime >= '"+time1+
+				"' AND a.scheduledTime <= '"+time2+"'";
 		Query query = entityManager.createQuery(jpql);
 
 		@SuppressWarnings("unchecked")
@@ -120,8 +130,8 @@ public class TsscGameDao implements ITsscGameDao{
 	 * Devuelve los juegos en la fecha dada con menos de 10 historias o sin ningun cronometro
 	 * @param date, fecha en la que esta programado el juego
 	 */
-	
-	public List<TsscGame> findByRequisites(LocalDate date)
+	@Override
+	public List<TsscGame> findByNoStoriesNoTimeControls(LocalDate date)
 	{
 		String jpql = "SELECT a FROM TsscGame a WHERE a.scheduledDate ='"+date+"' AND (size(a.tsscStories)<10 "
 				+ "OR size(a.tsscTimecontrols) = 0)";

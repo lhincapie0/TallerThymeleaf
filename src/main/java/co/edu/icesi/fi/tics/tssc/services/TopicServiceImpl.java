@@ -54,7 +54,7 @@ public class TopicServiceImpl implements TopicService{
 				{
 					if(topic.getDefaultSprints()>0)
 					{
-						topicDao.save(topic);
+						topicDao.update(topic);
 						
 					}else throw new NotEnoughSprintsException();
 				}else throw new NotEnoughGroupsException();

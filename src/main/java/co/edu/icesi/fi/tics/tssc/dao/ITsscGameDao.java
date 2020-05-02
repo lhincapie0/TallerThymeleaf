@@ -19,7 +19,9 @@ public interface ITsscGameDao {
 	public List<TsscGame> findByDescription(String description);
 	public List<TsscGame> findByTopic(long idTopic);
 	public List<Object[]> findTopicsByDate(LocalDate date);
+	public List<Object[]> findTopicsByDate2(LocalDate date);
 	public List<TsscGame> findByDateRange(LocalDate date1, LocalDate date2);
 	public List<TsscGame> findByDateAndTimeRange(LocalDate date, LocalTime time1, LocalTime time2);
+	public List<TsscGame> findByNoStoriesNoTimeControls(LocalDate date);
 
 }
